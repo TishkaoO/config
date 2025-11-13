@@ -1,0 +1,66 @@
+spring:
+  application:
+    name: API-GATEWAY
+  cloud:
+    gateway:
+      routes:
+        - id: identity-service
+          uri: lb://IDENTITY-SERVICE
+          predicates:
+            - Path=/auth/**
+        - id: vacation-service
+          uri: lb://VACATION-SERVICE
+          predicates:
+            - Path=/api/v1/vacation/request
+          filters:
+            - AuthenticationFilter
+
+resilience4j.circuitbreaker:
+  configs:
+    default:
+      registerHealthIndicator: true
+      slidingWindowSize: 10
+      minimumNumberOfCalls: 5
+      permittedNumberOfCallsInHalfOpenState: 3
+      automaticTransitionFromOpenToHalfOpenEnabled: true
+      waitDurationInOpenState: 5s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+      circuit-breaker-aspect-order: 2
+      recordExceptions:
+        - org.springframework.web.reactive.function.client.WebClientResponseException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+    shared:
+      slidingWindowSize: 100
+      permittedNumberOfCallsInHalfOpenState: 30
+      waitDurationInOpenState: 1s
+      failureRateThreshold: 50
+      eventConsumerBufferSize: 10
+  instances:
+    api-gateway:
+      baseConfig: default
+
+resilience4j.retry:
+  configs:
+    default:
+      maxAttempts: 5
+      waitDuration: 5000
+      retry-aspect-order: 1
+      retryExceptions:
+        - org.springframework.web.reactive.function.client.WebClientResponseException
+        - java.util.concurrent.TimeoutException
+        - java.io.IOException
+  instances:
+    api-gateway:
+      baseConfig: default
+
+server:
+  port: 8090
+
+identity:
+  url:
+    send: ${IDENTITY_SERVICE_URL:http://IDENTITY-SERVICE/auth/validate}
+
+jwt:
+  secret: ${JWT_SECRET:d1baa45246339f8c54ea3696fefe8941abec6333b2284759a2649cfcc1577bee}
