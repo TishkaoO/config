@@ -1,0 +1,18 @@
+spring:
+  application:
+    name: IDENTITY-SERVICE
+
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5437/identity_db}
+    username: ${DATASOURCE_USERNAME:postgres}
+    password: ${DATASOURCE_PASSWORD:password}
+  liquibase:
+    change-log: classpath:db/liquibase-changelog.yaml
+    enabled: true
+
+server:
+  port: 8082
+
+jwt:
+  secret: ${JWT_SECRET:d1baa45246339f8c54ea3696fefe8941abec6333b2284759a2649cfcc1577bee}
+  expiration: ${JWT_EXPIRATION:28800000}
