@@ -3,7 +3,7 @@ spring:
     name: VACATION-SERVICE
 
   datasource:
-    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/vacation_db}
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5433/vacation_db}
     username: ${DATASOURCE_USERNAME:local}
     password: ${DATASOURCE_PASSWORD:local}
 
