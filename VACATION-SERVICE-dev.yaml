@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: VACATION-SERVICE
+
+  datasource:
+    url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5432/vacation_db}
+    username: ${DATASOURCE_USERNAME:local}
+    password: ${DATASOURCE_PASSWORD:local}
+
+server:
+  port: 8087
+
+  resilience4j:
+    circuitbreaker:
+      instances:
+        vacation-service:
+          failure-rate-threshold: 50
+          automatic-transition-from-open-to-half-open-enabled: true
+          wait-duration-in-open-state: 10s
+          sliding-window-type: COUNT_BASED
+          sliding-window-size: 2
+          minimum-number-of-calls: 1
+          event-consumer-buffer-size: 10
+          register-health-indicator: true
+          permitted-calls-in-half-open-state: 3
+          record-exceptions:
+            - java.net.SocketTimeOutException
+    retry:
+      retry-aspect-order: 2
+      instances:
+        vacation-service:
+          max-attempts: 5
+          wait-duration: 5000
+
+accounting:
+  url:
+    send: ${ACCOUNTING_SERVICE_URL:http://ACCOUNTING-SERVICE/accounting/allocation}
+resources:
+  url:
+    send: ${RESOURCES_SERVICE_URL:http://RESOURCES-SERVICE/resources/check}
