@@ -6,10 +6,7 @@ spring:
     url: ${DATASOURCE_URL:jdbc:postgresql://localhost:5437/identity_db}
     username: ${DATASOURCE_USERNAME:postgres}
     password: ${DATASOURCE_PASSWORD:password}
-  liquibase:
-    change-log: classpath:db/liquibase-changelog.yaml
-    enabled: true
-
+    
 server:
   port: 8082
 
